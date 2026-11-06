@@ -1,14 +1,14 @@
 /**
  * @vitest-environment jsdom
  */
-import { PlatformSelfServeTrial } from '@activepieces/shared';
+import { SelfServeTrialInfo, SelfServeTrialState } from '@activepieces/shared';
 import { fireEvent, render, screen } from '@testing-library/react';
 import dayjs from 'dayjs';
 import * as React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SelfServeTrialEndingAlert } from '@/features/billing/components/self-serve-trial-notices';
-let trial: PlatformSelfServeTrial;
+let trial: SelfServeTrialInfo;
 let currentUserId = 'user-1';
 
 vi.mock('i18next', () => ({ t: (key: string) => key }));
@@ -43,7 +43,8 @@ vi.mock('@/features/billing/components/current-subscription-card', () => ({
 
 const NOW = new Date(2026, 9, 12, 10, 0, 0);
 
-const trialEnding = (ending: boolean): PlatformSelfServeTrial => ({
+const trialEnding = (ending: boolean): SelfServeTrialInfo => ({
+  state: SelfServeTrialState.ACTIVE,
   startedAt: dayjs(NOW)
     .subtract(ending ? 6 : 0, 'day')
     .toISOString(),
