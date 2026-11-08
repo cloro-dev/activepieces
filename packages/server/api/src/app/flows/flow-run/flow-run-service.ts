@@ -13,7 +13,7 @@ import { paginationHelper } from '../../helper/pagination/pagination-utils'
 import { Order } from '../../helper/pagination/paginator'
 import { system } from '../../helper/system/system'
 import { AppSystemProp } from '../../helper/system/system-props'
-import { assertRunCreditsNotExceeded, shouldBlockRunOnCredits } from '../../platform/billing-provider'
+import { assertRunCreditsNotExceeded, CreditCheckSpeed, shouldBlockRunOnCredits } from '../../platform/billing-provider'
 import { projectService } from '../../project/project-service'
 import { waitpointService } from '../../waitpoints/waitpoint-service'
 import { jobQueue, JobType } from '../../workers/job-queue/job-queue'
@@ -159,6 +159,7 @@ export const flowRunService = (log: FastifyBaseLogger) => ({
         await assertRunCreditsNotExceeded({
             platformId: project.platformId,
             environment: oldFlowRun.environment,
+            creditCheckSpeed: CreditCheckSpeed.NORMAL,
             log,
         })
 
@@ -440,6 +441,7 @@ export const flowRunService = (log: FastifyBaseLogger) => ({
         const creditsExhausted = await shouldBlockRunOnCredits({
             platformId,
             environment: RunEnvironment.PRODUCTION,
+            creditCheckSpeed: CreditCheckSpeed.NORMAL,
             log,
         })
         if (creditsExhausted) {
@@ -662,7 +664,7 @@ async function filterFlowRunsAndApplyFilters(
     }
 
     if (params.failedStepName) {
-        query = query.andWhere('flow_run.failedStepName = :failedStepName', {
+        query = query.andWhere('flow_run."failedStep"->>\'name\' = :failedStepName', {
             failedStepName: params.failedStepName,
         })
     }
