@@ -88,6 +88,7 @@ export type BarrierCreatedState = z.infer<typeof BarrierCreatedState>
 export const CreateWaitpointResponse = z.object({
     id: z.string(),
     resumeUrl: z.string(),
+    publicResumeUrl: z.string(),
     barrier: BarrierCreatedState.optional(),
 })
 export type CreateWaitpointResponse = z.infer<typeof CreateWaitpointResponse>
